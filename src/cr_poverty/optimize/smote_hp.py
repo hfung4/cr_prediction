@@ -2,7 +2,7 @@ from typing import Union, Dict
 from hyperopt import hp
 from hyperopt.pyll import scope
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 
 def _smote_hp(

@@ -7,9 +7,9 @@ Batch Deployment
 - Materalize inference dataframe to a delta table 
 """
 
-from costa_rica_poverty.config.core import config
-import costa_rica_poverty.deploy.deploy_utils_ws as du
-import costa_rica_poverty.data.data_manager as dm
+from cr_poverty.config.core import config
+import cr_poverty.deploy.deploy_utils_ws as du
+import cr_poverty.data.data_manager as dm
 from argparse import ArgumentParser
 import mlflow
 from pyspark.sql.types import DoubleType

@@ -1,6 +1,6 @@
 # from databricks.connect import DatabricksSession
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 # from ptb_ltc.config.env import DB_CLUSTER_ID, DB_HOST, DB_TOKEN
 

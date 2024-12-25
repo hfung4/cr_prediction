@@ -18,7 +18,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import LearningCurveDisplay, learning_curve
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 
 def generate_prc_plot(

@@ -31,7 +31,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 
 # Define a custom exception for timeout

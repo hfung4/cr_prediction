@@ -4,8 +4,8 @@ deploy_utils.py: this module is to be used in Unity Catalog enabled worksapce
 
 import mlflow
 from typing import Dict, List
-from costa_rica_poverty.logging import logger
-from costa_rica_poverty.config.core import config
+from cr_poverty.logging import logger
+from cr_poverty.config.core import config
 
 from mlflow.exceptions import RestException
 from mlflow.tracking import MlflowClient

@@ -1,5 +1,5 @@
 import great_expectations as gx
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 from pyspark.sql.functions import DataFrame as PySparkDataFrame
 import collections
 import yaml

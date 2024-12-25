@@ -8,7 +8,7 @@ import subprocess
 subprocess.run(["pip", "install", "great_expectations"])
 
 
-from costa_rica_poverty.processing.processing_utils import (
+from cr_poverty.processing.processing_utils import (
     add_age_features,
     add_social_security_retirement_age,
     add_pct_features,
@@ -20,8 +20,8 @@ from costa_rica_poverty.processing.processing_utils import (
     convert_integer_to_double,
 )
 
-from costa_rica_poverty.config.core import config
-import costa_rica_poverty.data.data_manager as dm
+from cr_poverty.config.core import config
+import cr_poverty.data.data_manager as dm
 
 from pyspark.sql import functions as F
 from pathlib import Path
@@ -173,7 +173,7 @@ gold_df = (
     .transform(convert_integer_to_double)
 )
 if args.env == "test":
-    from costa_rica_poverty.data.gx_manager import validate_gold_data
+    from cr_poverty.data.gx_manager import validate_gold_data
 
     # Validate gold data
     validation_results = validate_gold_data(gold_df, pipeline_type)

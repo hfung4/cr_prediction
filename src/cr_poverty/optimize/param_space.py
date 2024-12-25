@@ -1,8 +1,8 @@
 from hyperopt import hp
 
-import costa_rica_poverty.optimize.model_hp as model_hp
-import costa_rica_poverty.optimize.smote_hp as smote_hp
-from costa_rica_poverty.config.core import config
+import cr_poverty.optimize.model_hp as model_hp
+import cr_poverty.optimize.smote_hp as smote_hp
+from cr_poverty.config.core import config
 
 # Specify the hyperparameters for each model ---------------------------------------------------
 

@@ -3,7 +3,7 @@ from pyspark.sql import functions as F
 from pyspark.sql import SparkSession
 import os
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 
 if config.general.RUN_ON_DATABRICKS_WS:

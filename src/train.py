@@ -5,7 +5,7 @@ ML pipeline with the full train set, register the model in the workspace (later 
 - Assign model alias as "challenger"
 """
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 if config.model.USE_RESAMPLING_IN_TRAIN_PIPELINE:
     # Need to install treadpoolctl==3.1.0 to avoid error when using calibrated classifier and imblearn
@@ -19,8 +19,8 @@ if config.model.USE_RESAMPLING_IN_TRAIN_PIPELINE:
     # Import modules specific to using resampling in the train pipeline
     from collections import ChainMap
     from imblearn.pipeline import Pipeline as ImbPipeline
-    from costa_rica_poverty.optimize.loss_function import get_samplers
-    from costa_rica_poverty.pipeline import get_undersample_transformer
+    from cr_poverty.optimize.loss_function import get_samplers
+    from cr_poverty.pipeline import get_undersample_transformer
 
 import ast
 from argparse import ArgumentParser
@@ -32,8 +32,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import make_scorer, roc_auc_score
 import mlflow
 from mlflow.tracking import MlflowClient
-from costa_rica_poverty.evaluate.evaluation_metrics import generate_test_metrics
-from costa_rica_poverty.evaluate.visualization import (
+from cr_poverty.evaluate.evaluation_metrics import generate_test_metrics
+from cr_poverty.evaluate.visualization import (
     generate_calibration_curve,
     generate_confusion_matrix_plot,
     generate_learning_curves,
@@ -41,10 +41,10 @@ from costa_rica_poverty.evaluate.visualization import (
     generate_roc_plot,
     generate_shapley_values_plot,
 )
-from costa_rica_poverty.optimize.loss_function import get_models
-from costa_rica_poverty.pipeline import get_transform_pipeline
-import costa_rica_poverty.deploy.deploy_utils_ws as du
-import costa_rica_poverty.data.data_manager as dm
+from cr_poverty.optimize.loss_function import get_models
+from cr_poverty.pipeline import get_transform_pipeline
+import cr_poverty.deploy.deploy_utils_ws as du
+import cr_poverty.data.data_manager as dm
 
 # Set up scikit-learn to output pandas DataFrames
 from sklearn import set_config

@@ -4,7 +4,7 @@ deploy_utils_ws.py: this module is to be used in Workspace Model Registry
 
 import mlflow
 from typing import Dict, List
-from costa_rica_poverty.logging import logger
+from cr_poverty.logging import logger
 
 from mlflow.tracking import MlflowClient
 from mlflow.entities import Run

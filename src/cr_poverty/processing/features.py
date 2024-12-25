@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from costa_rica_poverty.config.core import config
+from cr_poverty.config.core import config
 
 
 # This processing step clean all the values of categorical columns by replacing special characters with underscores
