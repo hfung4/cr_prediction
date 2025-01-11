@@ -1,7 +1,6 @@
 from pyspark.sql import DataFrame as PySparkDataFrame
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession
-import os
 
 from cr_poverty.config.core import config
 
@@ -33,29 +32,6 @@ BRONZE_ALL_MEMBERS_TABLE = "all_members_monthly_vw"
 BRONZE_CHOREOGRAPH_TABLE = "choreograph"
 BRONZE_RESPONDER_TABLE = "ltc_product_purchased"
 
-
-# Bronze Train Data
-# BRONZE_TRAIN_ALL_MEMBERS_SCHEMA = "prep_do_all_members"
-# BRONZE_TRAIN_ALL_MEMBERS_TABLE = "all_members_monthly_vw"
-
-# BRONZE_TRAIN_CHOREOGRAPH_SCHEMA = "prep_dsi_feature_store"
-# BRONZE_TRAIN_CHOREOGRAPH_TABLE = "demo_choreo_cif_dly_hst"
-
-# BRONZE_TRAIN_RESPONDER_SCHEMA = "aw_dsi_feature_tables"
-# BRONZE_TRAIN_RESPONDER_TABLE = "ltc_product_purchased_interim
-
-
-# Bronze Serving Data (to be changed in the future when we have separated serving data from DEME)
-# BRONZE_SERVING_ALL_MEMBERS_SCHEMA = "prep_do_all_members"
-# BRONZE_SERVING_ALL_MEMBERS_TABLE = "all_members_monthly_vw"
-
-# BRONZE_SERVING_CHOREOGRAPH_SCHEMA = "prep_dsi_feature_store"
-# BRONZE_SERVING_CHOREOGRAPH_TABLE = "demo_choreo_cif_dly_hst"
-
-# BRONZE_SERVING_RESPONDER_SCHEMA = "aw_dsi_feature_tables"
-# BRONZE_SERVING_RESPONDER_TABLE = "ltc_product_purchased_interim"
-
-
 # Silver Data
 SILVER_SCHEMA_DICT = {
     env: f"aw_ds_ptb_silver_{env}" for env in ["dev", "staging", "test", "prod"]
@@ -74,27 +50,6 @@ SILVER_ALL_MEMBERS_TABLE_SERVING = f"all_members_{config.model.MODEL_NAME}_servi
 SILVER_CHOREOGRAPH_TABLE_SERVING = f"choreograph_{config.model.MODEL_NAME}_serving"
 
 
-# SILVER_TRAIN_SCHEMA = "aw_ds_ptb_silver_train"
-# SILVER_TRAIN_DATA_STORAGE_PATH = (
-#    f"s3://thrivent-prd-datalake-analytics-workspace-east/DSI/{SILVER_TRAIN_SCHEMA}"
-# )
-
-# SILVER_TRAIN_ALL_MEMBERS_TABLE = f"all_members_{config.model.MODEL_NAME}"
-# SILVER_TRAIN_CHOREOGRAPH_TABLE = f"choreograph_{config.model.MODEL_NAME}"
-# SILVER_TRAIN_RESPONDER_TABLE = f"responder_{config.model.MODEL_NAME}"
-
-
-# Silver Serving Data
-# SILVER_SERVING_SCHEMA = "aw_ds_ptb_silver_serving"
-# SILVER_SERVING_DATA_STORAGE_PATH = (
-#    f"s3://thrivent-prd-datalake-analytics-workspace-east/DSI/{SILVER_SERVING_SCHEMA}"
-# )
-
-# SILVER_SERVING_ALL_MEMBERS_TABLE = f"all_members_{config.model.MODEL_NAME}"
-# SILVER_SERVING_CHOREOGRAPH_TABLE = f"choreograph_{config.model.MODEL_NAME}"
-# SILVER_SERVING_RESPONDER_TABLE = f"responder_{config.model.MODEL_NAME}"
-
-
 # Gold Data
 GOLD_SCHEMA_DICT = {
     env: f"aw_ds_ptb_gold_{env}" for env in ["dev", "staging", "test", "prod"]
@@ -108,19 +63,6 @@ GOLD_TABLE = config.model.MODEL_NAME
 # Serving data (TODO: to be remove once we can use feature tore)
 GOLD_TABLE_SERVING = f"{config.model.MODEL_NAME}_serving"
 
-
-# GOLD_TRAIN_SCHEMA = "aw_ds_ptb_gold_train"
-# GOLD_TRAIN_DATA_STORAGE_PATH = (
-#    f"s3://thrivent-prd-datalake-analytics-workspace-east/DSI/{GOLD_TRAIN_SCHEMA}"
-# )
-# GOLD_TRAIN_TABLE = config.model.MODEL_NAME
-
-# Gold Serving Data
-# GOLD_SERVING_SCHEMA = "aw_ds_ptb_gold_serving"
-# GOLD_SERVING_DATA_STORAGE_PATH = (
-#    f"s3://thrivent-prd-datalake-analytics-workspace-east/DSI/{GOLD_SERVING_SCHEMA}"
-# )
-# GOLD_SERVING_TABLE = config.model.MODEL_NAME
 
 # Model asset schema (stores feautres, inference, and metric tables as well as models (when we use UC), Volumes, and functions)
 MODEL_ASSETS_SCHEMA_DICT = {
@@ -146,33 +88,11 @@ for env in ["dev", "staging", "test", "prod"]:
     )
 
 
-# Bronze Train
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_TRAIN_ALL_MEMBERS_SCHEMA}")
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_TRAIN_CHOREOGRAPH_SCHEMA}")
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_TRAIN_RESPONDER_SCHEMA}")
-
-# Bronze Serving
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_SERVING_ALL_MEMBERS_SCHEMA}")
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_SERVING_CHOREOGRAPH_SCHEMA}")
-# spark.sql(f"CREATE DATABASE IF NOT EXISTS {BRONZE_SERVING_RESPONDER_SCHEMA}")
-
-
 # Silver
 for env in ["dev", "staging", "test", "prod"]:
     spark.sql(
         f"CREATE DATABASE IF NOT EXISTS {SILVER_SCHEMA_DICT[env]} LOCATION '{SILVER_DATA_STORAGE_PATH_DICT[env]}'"
     )
-
-
-# Silver Train
-# spark.sql(
-#    f"CREATE DATABASE IF NOT EXISTS {SILVER_TRAIN_SCHEMA} LOCATION '{SILVER_TRAIN_DATA_STORAGE_PATH}'"
-# )
-
-# Silver Serving
-# spark.sql(
-#    f"CREATE DATABASE IF NOT EXISTS {SILVER_SERVING_SCHEMA} LOCATION '{SILVER_SERVING_DATA_STORAGE_PATH}'"
-# )
 
 
 # Gold
@@ -181,28 +101,17 @@ for env in ["dev", "staging", "test", "prod"]:
         f"CREATE DATABASE IF NOT EXISTS {GOLD_SCHEMA_DICT[env]} LOCATION '{GOLD_DATA_STORAGE_PATH_DICT[env]}'"
     )
 
-# Gold Train
-# spark.sql(
-#    f"CREATE DATABASE IF NOT EXISTS {GOLD_TRAIN_SCHEMA} LOCATION '{GOLD_TRAIN_DATA_STORAGE_PATH}'"
-# )
-
-# Gold Serving
-# spark.sql(
-#    f"CREATE DATABASE IF NOT EXISTS {GOLD_SERVING_SCHEMA} LOCATION '{GOLD_SERVING_DATA_STORAGE_PATH}'"
-# )
-
 
 # Model Assets
 for env in ["dev", "staging", "test", "prod"]:
+    # Create schema
     spark.sql(
         f"CREATE DATABASE IF NOT EXISTS {MODEL_ASSETS_SCHEMA_DICT[env]} LOCATION '{MODEL_ASSETS_DATA_STORAGE_PATH_DICT[env]}'"
     )
-
-
-# Inference
-# spark.sql(
-#    f"CREATE DATABASE IF NOT EXISTS {INFERENCE_SCHEMA} LOCATION '{INFERENCE_DATA_STORAGE_PATH}'"
-# )
+    # Create an empty (to be used as placeholder) inference table with the client id (cifidnbr) and adjusted effective date columns
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {MODEL_ASSETS_SCHEMA_DICT[env]}.{INFERENCE_TABLE}(cifidnbr string, adjusted_effective_date string) CLUSTER BY (adjusted_effective_date) LOCATION '{MODEL_ASSETS_DATA_STORAGE_PATH_DICT[env]}/{INFERENCE_TABLE}';"
+    )
 
 
 def get_schema_table_names(env: str) -> None:
@@ -229,45 +138,3 @@ def get_schema_table_names(env: str) -> None:
     }
 
     return schema_table_name_dict
-
-
-# def get_schema_table_names(pipeline_type: bool, env: str) -> None:
-#   if pipeline_type == "feature":
-#       schema_table_name_dict = {
-#           "bronze_all_members_schema": BRONZE_TRAIN_ALL_MEMBERS_SCHEMA,
-#           "bronze_all_members_table": BRONZE_TRAIN_ALL_MEMBERS_TABLE,
-#           "bronze_choreograph_schema": BRONZE_TRAIN_CHOREOGRAPH_SCHEMA,
-#           "bronze_choreograph_table": BRONZE_TRAIN_CHOREOGRAPH_TABLE,
-#           "bronze_responder_schema": BRONZE_TRAIN_RESPONDER_SCHEMA,
-#           "bronze_responder_table": BRONZE_TRAIN_RESPONDER_TABLE,
-#           "silver_data_storage_path": SILVER_TRAIN_DATA_STORAGE_PATH,
-#           "silver_schema": SILVER_TRAIN_SCHEMA,
-#           "silver_all_members_table": SILVER_TRAIN_ALL_MEMBERS_TABLE,
-#           "silver_choreograph_table": SILVER_TRAIN_CHOREOGRAPH_TABLE,
-#           "silver_responder_table": SILVER_TRAIN_RESPONDER_TABLE,
-#           "gold_data_storage_path": GOLD_TRAIN_DATA_STORAGE_PATH,
-#           "gold_schema": GOLD_TRAIN_SCHEMA,
-#           "gold_table": GOLD_TRAIN_TABLE,
-#       }
-#   else:
-#       schema_table_name_dict = {
-#           "bronze_all_members_schema": BRONZE_SERVING_ALL_MEMBERS_SCHEMA,
-#           "bronze_all_members_table": BRONZE_SERVING_ALL_MEMBERS_TABLE,
-#           "bronze_choreograph_schema": BRONZE_SERVING_CHOREOGRAPH_SCHEMA,
-#           "bronze_choreograph_table": BRONZE_SERVING_CHOREOGRAPH_TABLE,
-#           "bronze_responder_schema": BRONZE_SERVING_RESPONDER_SCHEMA,
-#           "bronze_responder_table": BRONZE_SERVING_RESPONDER_TABLE,
-#           "silver_data_storage_path": SILVER_SERVING_DATA_STORAGE_PATH,
-#           "silver_schema": SILVER_SERVING_SCHEMA,
-#           "silver_all_members_table": SILVER_SERVING_ALL_MEMBERS_TABLE,
-#           "silver_choreograph_table": SILVER_SERVING_CHOREOGRAPH_TABLE,
-#           "silver_responder_table": SILVER_SERVING_RESPONDER_TABLE,
-#           "gold_data_storage_path": GOLD_SERVING_DATA_STORAGE_PATH,
-#           "gold_schema": GOLD_SERVING_SCHEMA,
-#           "gold_table": GOLD_SERVING_TABLE,
-#           "inference_data_storage_path": INFERENCE_DATA_STORAGE_PATH,
-#           "inference_schema": INFERENCE_SCHEMA,
-#           "inference_table": INFERENCE_TABLE,
-#       }
-#
-#   return schema_table_name_dict

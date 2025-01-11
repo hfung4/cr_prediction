@@ -9,7 +9,7 @@ from pydantic import BaseModel
 import yaml
 
 # Project Directories
-PACKAGE_ROOT = Path("ptb_ltc")
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = PACKAGE_ROOT.parent
 ROOT = PROJECT_ROOT.parent
 CONFIG_DIR = Path(PACKAGE_ROOT / "config")
@@ -27,46 +27,25 @@ class GeneralConfig(BaseModel):
 # Pydantic model for processing configuration
 class ProcessingConfig(BaseModel):
     # Transformation Parameters
-    IMPUTE_CUSTAGE: int
-    MAX_AGE: int
-    MAX_ASSETS: int
-    IMPUTE_YEARSMEMBER: int
-    NON_RESPONSE_RATIO: int
-    PERFORM_INITIAL_DOWNSAMPLING: bool
-    RARE_LEVEL_MIN_PCT_THRESHOLD: float
-    RANDOM_UNDER_SAMPLING_STRATEGY: float
-    SMOTE_OVER_SAMPLING_STRATEGY: float
-    SMOTES_TO_TRY: List[
-        Literal[
-            "SMOTE",
-            "BorderlineSMOTE",
-            "ADASYN",
-        ]
-    ]
+    ID_COLS: List[str]
+    IND_BOOL_COLS: List[str]
+    IND_ORDERED_COLS: List[str]
+    HH_BOOL_COLS: List[str]
+    HH_ORDERED_COLS: List[str]
+    HH_CONT_COLS: List[str]
+    SQR_COLS: List[str]
+    REDUNDANT_HH_COLS: List[str]
+    REDUNDANT_ELEC_COLS: List[str]
+    SELECTED_IND_AGG_FEATURES: List[str]
+
 
 # Pydantic model for model configuration
 class ModelConfig(BaseModel):
     MODEL_NAME: str
     OUTCOME_VARIABLE: str
-    TIME_PERIOD_VARIABLE:str
-    CLIENT_UNIQUE_IDENTIFER: str
-    SELECTED_FEATURES: List[str]
-    MODELS_TO_TRY: List[
-        Literal[
-            "KNeighborsClassifier",
-            "GaussianNB",
-            "DecisionTreeClassifier",
-            "LogisticRegression",
-            "RandomForestClassifier",
-            "XGBClassifier",
-            "LGBMClassifier",
-            "MLPClassifier",
-        ]
-    ]
+    POVERTY_MAPPING: Dict[str, str]
     PARALLELISM: int
     TIMEOUT_SECONDS: int
-    USE_RESAMPLING_IN_TRAIN_PIPELINE: bool
-    SELECT_FROM_LATEST_CV_RUNS: bool
     TEST_SIZE: float
     N_FOLDS: int
     N_ITER: int
@@ -75,10 +54,15 @@ class ModelConfig(BaseModel):
     CALIBRATION_METHOD: Literal["sigmoid", "isotonic"]
     PLOT_LEARNING_CURVES: bool
     PLOT_SHAP_VALUES: bool
-    SHAP_THRESHOLD: int
+    SNAP_THRESHOLD: int
     SHAP_TYPE: Literal["beeswarm", "violin", "layered_violin", "bar"]
+    SELECT_FROM_LATEST_CV_RUNS: bool
     MIN_TEST_ROC_AUC: float
     MIN_TEST_AURPC_LIFT: float
+    CLF__N_ESTIMATORS: int
+    CLF__MAX_DEPTH: int
+    CLF__MIN_SAMPLES_SPLIT: int
+    CLF__MIN_SAMPLES_LEAF: int
 
 
 # Master config object

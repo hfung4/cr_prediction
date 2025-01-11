@@ -1,7 +1,7 @@
 
 RANDOM_STATE: 42
 
-DATABRICKS_WORKSPACE_URL: "/Users/henry.fung@thrivent.com/"
+DATABRICKS_WORKSPACE_URL: "/Users/henryhfung4_gmail.com#ext#@henryhfung4gmail.onmicrosoft.com/"
 
 # True if running on Databricks workspace; False if running via databricks-connect
 RUN_ON_DATABRICKS_WS: True
