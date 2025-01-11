@@ -1,5 +1,5 @@
 import re
-from cr_poverty.logging import logger
+from cr.logging import logger
 from pyspark.sql import DataFrame as PySparkDataFrame
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
@@ -11,7 +11,7 @@ import math
 from collections import ChainMap
 from datetime import date, datetime
 from typing import List, Tuple, Dict, Union
-from cr_poverty.config.core import config
+from cr.config.core import config
 
 
 def apply_sql_col_rules(var_list: list[str]) -> list[str]:

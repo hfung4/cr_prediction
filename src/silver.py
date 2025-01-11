@@ -8,7 +8,7 @@ from pathlib import Path
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
 
-from cr_poverty.processing.processing_utils import (
+from cr.processing.processing_utils import (
     snake_case_column_names,
     input_args_time_periods_validation,
     get_validated_time_period_inference_pipeline,
@@ -18,8 +18,8 @@ from cr_poverty.processing.processing_utils import (
     create_set_type_for_train_test_data,
     resample_responder_df,
 )
-import cr_poverty.data.data_manager as dm
-from cr_poverty.config.core import config
+import cr.data.data_manager as dm
+from cr.config.core import config
 
 # Get user inputs-- train and test, or serving time period start dates
 parser = ArgumentParser()

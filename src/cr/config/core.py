@@ -43,7 +43,7 @@ class ProcessingConfig(BaseModel):
 class ModelConfig(BaseModel):
     MODEL_NAME: str
     OUTCOME_VARIABLE: str
-    POVERTY_MAPPING: Dict[str, str]
+    POVERTY_MAPPING: Dict[int, str]
     PARALLELISM: int
     TIMEOUT_SECONDS: int
     TEST_SIZE: float
@@ -54,7 +54,7 @@ class ModelConfig(BaseModel):
     CALIBRATION_METHOD: Literal["sigmoid", "isotonic"]
     PLOT_LEARNING_CURVES: bool
     PLOT_SHAP_VALUES: bool
-    SNAP_THRESHOLD: int
+    SHAP_THRESHOLD: int
     SHAP_TYPE: Literal["beeswarm", "violin", "layered_violin", "bar"]
     SELECT_FROM_LATEST_CV_RUNS: bool
     MIN_TEST_ROC_AUC: float

@@ -1,3 +1,5 @@
+# Common #
+###################
 .databricks/
 build/
 dist/
@@ -6,3 +8,69 @@ __pycache__/
 .venv/
 scratch/**
 !scratch/README.md
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.pdf
+*.db
+*.coverage
+
+# MLflow (local) #
+######################
+mlruns/*
+
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
+
+# local virtual environment #
+######################
+.cr_env/*
+
+
+# Others #
+######################
+*.ipynb_checkpoints
+*.csv
+*.pyc
+.idea
+*.pkl
+*.pyc
+*.joblib
+*.databricks
+*.vscode/
+

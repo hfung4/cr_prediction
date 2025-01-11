@@ -7,10 +7,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from imblearn.under_sampling import RandomUnderSampler
 
-from cr_poverty.processing.features import (
+from cr.processing.features import (
     clean_categorical_vars,
 )
-from cr_poverty.config.core import config
+from cr.config.core import config
 
 # Numeric features
 # Impute missing values with mean

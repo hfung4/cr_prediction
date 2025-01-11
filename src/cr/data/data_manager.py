@@ -1,78 +1,54 @@
 from pyspark.sql import DataFrame as PySparkDataFrame
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession
+from databricks.connect import DatabricksSession
 
-from cr_poverty.config.core import config
 
+from cr.config.core import config
 
 if config.general.RUN_ON_DATABRICKS_WS:
     spark = SparkSession.builder.getOrCreate()
+else:
+    spark = DatabricksSession.builder.getOrCreate()
 
 
-"""
-Schema and Table names in the Hive Meta Store (to be changed/replaced once the project is migrated to UC sandbox)
-"""
-
-DATA_STORAGE_EXTERNAL_LOCATION = (
-    "s3://thrivent-prd-datalake-analytics-workspace-east/DSI"
+# External data storage location
+RAW_DATA_EXTERNAL_LOCATION = (
+    "abfss://costa-rica-poverty-data@hfdbsa.dfs.core.windows.net/"
 )
+TRAINING_DATA_DIR = f"{RAW_DATA_EXTERNAL_LOCATION}/raw-train"
+SERVING_DATA_DIR = f"{RAW_DATA_EXTERNAL_LOCATION}/raw-serving"
 
+TRAIN_DATA_NAME = config.processing.TRAIN_DATA_NAME
 
 # Bronze data
 BRONZE_SCHEMA_DICT = {
-    env: f"aw_ds_ptb_bronze_{env}" for env in ["dev", "staging", "test", "prod"]
+    env: f"{env}.bronze" for env in ["dev", "staging", "test", "prod"]
 }
 
-BRONZE_DATA_STORAGE_PATH_DICT = {
-    env: f"{DATA_STORAGE_EXTERNAL_LOCATION}/{BRONZE_SCHEMA_DICT[env]}"
-    for env in ["dev", "staging", "test", "prod"]
-}
-
-BRONZE_ALL_MEMBERS_TABLE = "all_members_monthly_vw"
-BRONZE_CHOREOGRAPH_TABLE = "choreograph"
-BRONZE_RESPONDER_TABLE = "ltc_product_purchased"
+BRONZE_INCREMENTAL_TABLE = (
+    f"{config.model.MODEL_NAME}_{config.genereal.TRAIN_DATA_NAME}"
+)
+BRONZE_FULL_TABLE = config.model.MODEL_NAME
 
 # Silver Data
 SILVER_SCHEMA_DICT = {
-    env: f"aw_ds_ptb_silver_{env}" for env in ["dev", "staging", "test", "prod"]
-}
-SILVER_DATA_STORAGE_PATH_DICT = {
-    env: f"{DATA_STORAGE_EXTERNAL_LOCATION}/{SILVER_SCHEMA_DICT[env]}"
-    for env in ["dev", "staging", "test", "prod"]
+    env: f"{env}.silver" for env in ["dev", "staging", "test", "prod"]
 }
 
-SILVER_ALL_MEMBERS_TABLE = f"all_members_{config.model.MODEL_NAME}"
-SILVER_CHOREOGRAPH_TABLE = f"choreograph_{config.model.MODEL_NAME}"
-SILVER_RESPONDER_TABLE = f"responder_{config.model.MODEL_NAME}"
-
-# Serving data (TODO: to be remove once we can use feature tore)
-SILVER_ALL_MEMBERS_TABLE_SERVING = f"all_members_{config.model.MODEL_NAME}_serving"
-SILVER_CHOREOGRAPH_TABLE_SERVING = f"choreograph_{config.model.MODEL_NAME}_serving"
-
+SILVER_TABLE = config.model.MODEL_NAME
 
 # Gold Data
-GOLD_SCHEMA_DICT = {
-    env: f"aw_ds_ptb_gold_{env}" for env in ["dev", "staging", "test", "prod"]
-}
-GOLD_DATA_STORAGE_PATH_DICT = {
-    env: f"{DATA_STORAGE_EXTERNAL_LOCATION}/{GOLD_SCHEMA_DICT[env]}"
-    for env in ["dev", "staging", "test", "prod"]
-}
-GOLD_TABLE = config.model.MODEL_NAME
+BRONZE_SCHEMA_DICT = {env: f"{env}.gold" for env in ["dev", "staging", "test", "prod"]}
 
-# Serving data (TODO: to be remove once we can use feature tore)
-GOLD_TABLE_SERVING = f"{config.model.MODEL_NAME}_serving"
+GOLD_TABLE = config.model.MODEL_NAME
 
 
 # Model asset schema (stores feautres, inference, and metric tables as well as models (when we use UC), Volumes, and functions)
 MODEL_ASSETS_SCHEMA_DICT = {
-    env: f"aw_ds_ptb_ml_assets_{env}" for env in ["dev", "staging", "test", "prod"]
+    env: f"{env}.cr_ml_assets" for env in ["dev", "staging", "test", "prod"]
 }
 
-MODEL_ASSETS_DATA_STORAGE_PATH_DICT = {
-    env: f"{DATA_STORAGE_EXTERNAL_LOCATION}/{MODEL_ASSETS_SCHEMA_DICT[env]}"
-    for env in ["dev", "staging", "test", "prod"]
-}
 INFERENCE_TABLE = f"inference_{config.model.MODEL_NAME}"
 # METRICS_TABLE
 

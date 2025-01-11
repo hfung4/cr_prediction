@@ -4,7 +4,7 @@ from pyspark.sql import types as T
 from pyspark.sql import functions as F
 from pyspark.sql import DataFrame as PySparkDataFrame
 import datetime
-from cr_poverty.config.core import config
+from cr.config.core import config
 from pyspark.sql import SparkSession
 from datetime import date
 from decimal import Decimal
@@ -19,7 +19,7 @@ from pyspark.sql.types import (
 )
 from pyspark.sql import Row
 
-from src.cr_poverty.processing.processing_utils import (
+from src.cr.processing.processing_utils import (
     snake_case_column_names,
     map_column,
     add_social_security_retirement_age,
@@ -42,7 +42,7 @@ from src.cr_poverty.processing.processing_utils import (
     convert_integer_to_double,
 )
 
-from src.cr_poverty.config.core import config
+from src.cr.config.core import config
 
 from pyspark.sql import SparkSession
 

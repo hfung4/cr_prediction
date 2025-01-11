@@ -1,90 +1,120 @@
 """
-deploy_utils_ws.py: this module is to be used in Workspace Model Registry
+deploy_utils.py: this module is to be used in Unity Catalog enabled worksapce
 """
 
 import mlflow
 from typing import Dict, List
-from cr_poverty.logging import logger
+from cr.logging import logger
+from cr.config.core import config
 
+from mlflow.exceptions import RestException
 from mlflow.tracking import MlflowClient
 from mlflow.entities import Run
 from mlflow.entities.model_registry import ModelVersion
 from mlflow.entities.model_registry.registered_model import RegisteredModel
 
 
-def register_model(model_name: str, run_id) -> None:
-    """Register model in the workspace model registry
+def register_model_version(run_id: str, model_uri: str, model_name: str) -> int:
+    """Register model in Unity Catalog model registry (UC only)
 
     Args:
-        model_name (str): two-level namespace model name
-        run_id (str): MLflow run ID of the model version to register
-    """
-    mlflow.register_model(model_uri=f"runs:/{run_id}/model", name=model_name)
-    logger.info(f"Model {model_name} added to the Workspace Model Registry")
-
-
-def get_registered_model(registry_model_name: str) -> RegisteredModel:
-    """
-    Fetch the registered model by name from the MLflow Model Registry (Workspace Model Registry only).
-
-    Args:
-        registry_model_name (str): Name of the MLflow Registry Model.
+        run_id (str): model run ID
+        model_uri (str): model URI
+        model_name (str): 3-level model name
 
     Returns:
-        registered_model (RegisteredModel): The registered model object.
-
-    Raises:
-        RuntimeError: If no registered model is found.
+        int: model version
     """
     client = MlflowClient()
-    filter_string = f'name="{registry_model_name}"'
-    registered_models = client.search_registered_models(filter_string=filter_string)
+    # if model doesn't exist, then register
+    try:
+        client.get_registered_model(name=model_name)
+    except RestException:
+        client.create_registered_model(name=model_name)
+        logger.info(f"Model {model_name} added to Unity Catalog")
 
-    if not registered_models:
-        raise RuntimeError(
-            f"No registered model found with name '{registry_model_name}'"
-        )
+    model_version = client.create_model_version(
+        run_id=run_id,
+        source=model_uri,
+        name=model_name,
+    )
 
-    return registered_models[0]
+    return model_version.version
 
 
-def get_model_version_by_stage_and_alias(
-    registered_model: RegisteredModel, stage: str = "None", alias: str = None
-) -> ModelVersion:
-    """
-    For a given registered model object, fetch the latest model version for the given stage and alias (Workspace Model Registry only).
+def get_model_uri(model_name: str, alias: str) -> str:
+    """Get model URI by model name and alias (UC only)
 
     Args:
-        registered_model (RegisteredModel): The registered model object.
-        stage (str): Stage for this model. One of "None", "Staging", or "Production".
-        alias (str): Optional alias for this model. One of "Challenger" or "Champion".
+        model_name (str): three level namespace model name
+        alias (str): model alias
 
     Returns:
-        model_version (ModelVersion): The latest model version matching the stage and alias.
-
-    Raises:
-         ValueError: If the provided stage is not one of 'None', 'Staging', or 'Production'.
-                    If the alias is provided but not one of 'Challenger' or 'Champion'.
-                    If no model version is found that matches the specified stage and alias.
-
+        str: model URI
     """
-    # Data validation
-    if stage not in ["None", "Staging", "Production"]:
-        raise ValueError("stage must be one of 'None', 'Staging', 'Production'")
-
-    if alias and alias not in ["Challenger", "Champion"]:
-        raise ValueError("alias must be one of 'Challenger' or 'Champion'")
-
-    for model_version in registered_model.latest_versions:
-        if model_version.current_stage == stage:
-            # Check alias if provided
-            if alias is None or model_version.tags.get("alias") == alias:
-                return model_version
-
-    raise ValueError(f"No model version found in stage '{stage}' with alias '{alias}'")
+    client = MlflowClient()
+    mv = client.get_model_version_by_alias(model_name, alias)
+    return f"runs:/{mv.run_id}/model"
 
 
-def get_run_from_run_id(run_id: str) -> Run:
+def get_latest_model_version(model_name: str) -> object:
+    """Get the latest version of the model from the model registry (UC only)
+    Args:
+        model_name (str): three-level namespace of the model
+    Returns:
+        latest_version: mlflow model version object
+    """
+    latest_version = 1
+    client = MlflowClient()
+    for mv in client.search_model_versions(f"name='{model_name}'"):
+        version_int = int(mv.version)
+        if version_int > latest_version:
+            latest_version = version_int
+    return latest_version
+
+
+def get_run_by_name_and_alias(model_name: str, alias: str) -> Run:
+    """Get run information (in mlflow format) based on model name and alias
+
+    Args:
+        model_name (str): 3-level model name
+        alias (str): current alias
+
+    Returns:
+        Run: mlflow Run object
+    """
+    client = MlflowClient()
+    try:
+        model_version = client.get_model_version_by_alias(model_name, alias).version
+    except RestException:
+        logger.warning("Model with given name and alias not found in registry")
+        return None
+
+    run_id = client.get_model_version(model_name, model_version).run_id
+    run = client.get_run(run_id=run_id)
+
+    return run
+
+
+def transition_model(model_name: str, model_version: int, alias: str) -> None:
+    """Transition given version of model to new alias (UC only)
+
+    Args:
+        model_name (str): three-level namespace model name
+        model_version (int): version to transition
+        alias (str): alias to assign to model
+    """
+    client = MlflowClient()
+
+    client.set_registered_model_alias(
+        name=model_name,
+        version=model_version,
+        alias=alias,
+    )
+    logger.info(f"Version {model_version} of {model_name} transitioned to {alias}")
+
+
+def get_run_by_run_id(run_id: str) -> Run:
     """
     Fetch the MLflow run object using the run ID.
 
@@ -102,34 +132,6 @@ def get_run_from_run_id(run_id: str) -> Run:
         return run
     except Exception as e:
         raise RuntimeError(f"Failed to retrieve run with run ID '{run_id}': {str(e)}")
-
-
-def transition_model(model_version: ModelVersion, stage: str):
-    """
-    Transition a model to a specified stage in Workspace Model Registry using the associated
-    mlflow.entities.model_registry.ModelVersion object.
-
-    Args:
-        model_version (mlflow.entities.model_registry.ModelVersion. ModelVersion) object to transition
-        stage (str): New desired stage for this model version. One of "Staging", "Production", "Archived" or "None"
-    Returns:
-        A single mlflow.entities.model_registry.ModelVersion object
-    """
-    client = MlflowClient()
-
-    model_version = client.transition_model_version_stage(
-        name=model_version.name,
-        version=model_version.version,
-        stage=stage,
-        archive_existing_versions=True,
-    )
-
-    # Set alias to Champion
-    client.set_model_version_tag(
-        model_version.name, model_version.version, "alias", "Champion"
-    )
-
-    return model_version
 
 
 def get_latest_best_run(
@@ -163,14 +165,14 @@ def get_latest_best_run(
 
 
 def get_overall_best_run(
-    experiment_id: str, overall_run_filter_string: str
+    experiment_id: str, overall_run_filter_string: str = ""
 ) -> Dict[str, object]:
     """Get the best overall cv run (by median_cv_log_loss) across all runs
        in the target experiment
 
     Args:
         experiment_id (str): id of the target experiment
-        parent_run_filter_string (str): filter string for the parent run in CV experiments
+        overall_run_filter_string (str): filter string for the overall runs in CV experiment, default to empty string (no filter)
     Returns:
         Dict: a dictionary containing the best_run id and the mlrun object
     """

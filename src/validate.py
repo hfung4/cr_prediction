@@ -9,9 +9,9 @@ import mlflow
 from mlflow import MlflowClient
 from argparse import ArgumentParser
 
-from cr_poverty.config.core import config
-import cr_poverty.deploy.deploy_utils_ws as du
-from cr_poverty.logging import logger
+from cr.config.core import config
+import cr.deploy.deploy_utils_ws as du
+from cr.logging import logger
 
 # Get user inputs and set parameters
 parser = ArgumentParser(description="Run mode and deploy environment.")
