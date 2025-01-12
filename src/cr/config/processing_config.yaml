@@ -1,12 +1,13 @@
 # Incremental data name for training
 TRAIN_DATA_NAME: "train1"
 
+TIME_PERIOD_COL: "time_period"
+
 # id variables
 #id_
 ID_COLS:
   - "Id"
   - "idhogar"
-  - "Target"
 
 # boolean variables at the individual level
 # ind_bool

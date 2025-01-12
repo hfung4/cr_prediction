@@ -20,14 +20,17 @@ TESTS_DIR = Path(PROJECT_ROOT / "tests")
 # Pydantic model for common configuration
 class GeneralConfig(BaseModel):
     RANDOM_STATE: int
+    TRAIN_DATA_TIME_PERIOD: int
     DATABRICKS_WORKSPACE_URL: str
     RUN_ON_DATABRICKS_WS: bool
 
 
 # Pydantic model for processing configuration
 class ProcessingConfig(BaseModel):
+    TRAIN_DATA_NAME: str
     # Transformation Parameters
     ID_COLS: List[str]
+    TIME_PERIOD_COL: str
     IND_BOOL_COLS: List[str]
     IND_ORDERED_COLS: List[str]
     HH_BOOL_COLS: List[str]
