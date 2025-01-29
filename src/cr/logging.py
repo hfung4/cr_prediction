@@ -5,8 +5,8 @@ from cr.config.core import LOGS_DIR
 
 
 def setup_logger(
-    name="ptb",
-    log_file=LOGS_DIR / "ptb.log",
+    name="cr_poverty",
+    log_file=LOGS_DIR / "cr_poverty.log",
     file_log_level=logging.INFO,
     console_log_level=logging.INFO,
     max_bytes=50 * 1024 * 1024,  # 50 MB
